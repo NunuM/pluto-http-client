@@ -18,6 +18,7 @@ NodeJS features.
 * Filters / Observability
 * Streaming
 * Well-defined API
+* 0 dependencies
 
 ### Examples
 
@@ -89,6 +90,29 @@ console.log(obj);
     .withFilter(new LoggingFilter(console.log))
     .withHttp2()
     .build();
+```
+
+### Implementing a Filter - Uppercase PostRequest Filter 
+
+```typescript
+class ToUppercaseFilter extends Transform implements Filter {
+    
+    filter(requestContext: RequestContext, responseContext?: ResponseContext): void {
+        responseContext?.pipe(this);
+    }
+
+    order(): FilterOrder {
+        return FilterOrder.PostRequest;
+    }
+
+    _transform(chunk: any, encoding: BufferEncoding, callback: TransformCallback) {
+        callback(null, String(chunk).toUpperCase());
+    }
+
+    equals(other: any): boolean {
+        return other == this;
+    }
+}
 ```
 
 ### Request Interface

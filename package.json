@@ -10,6 +10,7 @@
   "scripts": {
     "run": "npx tsc",
     "build": "npx tsc",
+    "run-example": "node --require ts-node/register",
     "test": "npx jest"
   },
   "keywords": [

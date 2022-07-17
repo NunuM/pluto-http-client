@@ -28,14 +28,14 @@ export class LoggingFilter implements Filter {
 
 class BodyLoggingFilter extends PassThrough implements Filter {
 
-    private data: any[] = [];
+    private _data: any[] = [];
 
     constructor(private loggerFn: (msg: string) => void, private _order: FilterOrder) {
         super();
     }
 
     _transform(chunk: any, encoding: BufferEncoding, callback: TransformCallback) {
-        this.data.push(chunk);
+        this._data.push(chunk);
 
         super._transform(chunk, encoding, callback);
     }
@@ -46,8 +46,8 @@ class BodyLoggingFilter extends PassThrough implements Filter {
 
     filter(requestContext: RequestContext, responseContext?: ResponseContext) {
         this.addListener('end', () => {
-            this.loggerFn(`URL:${requestContext.url()}\nMethod:${requestContext.method()}\nStatus:${responseContext?.getStatus()}\nHeaders:${util.format("%s", responseContext?.getHeaders())}\nBody:${this.data}`);
-            this.data = [];
+            this.loggerFn(`URL:${requestContext.url()}\nMethod:${requestContext.method()}\nStatus:${responseContext?.getStatus()}\nHeaders:${util.format("%s", responseContext?.getHeaders())}\nBody:${this._data}`);
+            this._data = [];
         });
 
         if (this._order < 0) {

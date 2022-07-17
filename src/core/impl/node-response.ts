@@ -70,7 +70,9 @@ export class NodeResponse implements ResponseContext {
                 // @ts-ignore
                 this._mediaType = MediaType.fromString(this._headers["content-type"]);
             } catch (e) {
-
+                if (process.env.PLUTO_DEBUG) {
+                    console.debug("Error parsing ETAG:", e);
+                }
             }
         }
 
@@ -83,7 +85,9 @@ export class NodeResponse implements ResponseContext {
                 // @ts-ignore
                 this._etag = EntityTag.fromString(this._headers['etag'])
             } catch (e) {
-
+                if (process.env.PLUTO_DEBUG) {
+                    console.debug("Error parsing ETAG:", e);
+                }
             }
         }
 
