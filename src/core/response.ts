@@ -2,7 +2,7 @@ import {MediaType} from "./media-type";
 import {Writable} from "stream";
 import {MultiValueMap} from "../utils/collections";
 import {Cookie} from "./cookie";
-import {Unmarshal} from "../framwork/unmarshal";
+import {Unmarshal} from "../framework/unmarshal";
 import {MultiValueMapType} from "./header";
 import {EntityTag} from "./entity-tag";
 import ReadableStream = NodeJS.ReadableStream;

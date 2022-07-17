@@ -4,7 +4,7 @@ import {Response} from "./response";
 import {Method} from "./method";
 import {MediaType} from "./media-type";
 import {Cookie} from "./cookie";
-import {Entity} from "../framwork/entity";
+import {Entity} from "../framework/entity";
 
 
 export interface RequestBuilder {

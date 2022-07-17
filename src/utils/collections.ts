@@ -1,7 +1,7 @@
-import {Equals} from "../framwork/equals";
-import {Cloneable} from "../framwork/cloneable";
-import {Comparator} from "../framwork/comparator";
-import {Identifiable} from "../framwork/identifiable";
+import {Equals} from "../framework/equals";
+import {Cloneable} from "../framework/cloneable";
+import {Comparator} from "../framework/comparator";
+import {Identifiable} from "../framework/identifiable";
 
 export class MultiValueMap<T extends Cloneable<T> & Equals & Identifiable> {
 

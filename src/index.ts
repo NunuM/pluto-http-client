@@ -15,10 +15,10 @@ export {MediaType} from "./core/media-type"
 export {Method} from "./core/method"
 export {Response} from "./core/response"
 
-export {Marshal} from "./framwork/marshal"
-export {Unmarshal} from "./framwork/unmarshal"
-export {Equals} from "./framwork/equals"
-export {Entity, JsonEntity, StringEntity, BinaryEntity, FormUrlEncoded} from "./framwork/entity"
+export {Marshal} from "./framework/marshal"
+export {Unmarshal} from "./framework/unmarshal"
+export {Equals} from "./framework/equals"
+export {Entity, JsonEntity, StringEntity, BinaryEntity, FormUrlEncoded} from "./framework/entity"
 
 // Export Built-In Filters
 export {LoggingFilter, LoggingRequestBodyFilter, LoggingResponseBodyFilter} from "./core/filters/logging-filter"

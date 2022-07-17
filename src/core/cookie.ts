@@ -1,7 +1,7 @@
 import {HttpHeaderReader} from "../utils/http-header-reader";
-import {Equals} from "../framwork/equals";
-import {Identifiable} from "../framwork/identifiable";
-import {Cloneable} from "../framwork/cloneable";
+import {Equals} from "../framework/equals";
+import {Identifiable} from "../framework/identifiable";
+import {Cloneable} from "../framework/cloneable";
 
 export enum SameSite {
     NONE = "None",

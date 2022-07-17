@@ -1,4 +1,4 @@
-import {Equals} from "../framwork/equals";
+import {Equals} from "../framework/equals";
 import {HttpHeaderReader} from "../utils/http-header-reader";
 
 export class MediaType implements Equals {

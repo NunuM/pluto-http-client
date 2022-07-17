@@ -4,7 +4,7 @@ import {MultiValueMap} from "../../utils/collections";
 import {Cookie} from "../cookie";
 import {MultiValueMapType} from "../header";
 import {Readable, Transform, Writable} from "stream";
-import {Unmarshal} from "../../framwork/unmarshal";
+import {Unmarshal} from "../../framework/unmarshal";
 import {Buffer} from "buffer";
 import {EntityTag} from "../entity-tag";
 import {ResponseContext, StatusType} from "../response";

@@ -12,7 +12,7 @@ import {fromMap, HttpHeaders} from "../http-headers";
 import {MediaType} from "../media-type";
 import {MultiValueMap} from "../../utils/collections";
 import {Cookie} from "../cookie";
-import {Entity} from "../../framwork/entity";
+import {Entity} from "../../framework/entity";
 import {pipeline, Readable, Transform, Writable} from "stream";
 import {RequestContext, RequestContextStreaming, RequestInformation} from "../request-context";
 import {ClientHttp2Session, constants as Http2Constants} from "http2";

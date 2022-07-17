@@ -1,5 +1,5 @@
 import {ResponseContext} from "./response";
-import {Equals} from "../framwork/equals";
+import {Equals} from "../framework/equals";
 import {RequestContext} from "./request-context";
 
 export interface Filter extends Equals {

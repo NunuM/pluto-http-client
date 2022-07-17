@@ -1,6 +1,6 @@
-import {Equals} from "../framwork/equals";
-import {Cloneable} from "../framwork/cloneable";
-import {Identifiable} from "../framwork/identifiable";
+import {Equals} from "../framework/equals";
+import {Cloneable} from "../framework/cloneable";
+import {Identifiable} from "../framework/identifiable";
 
 export type MultiValueMapType = { [key: string]: number | string | string[] | undefined }
 
