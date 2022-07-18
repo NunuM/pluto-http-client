@@ -73,7 +73,7 @@ export class JsonEntity extends Entity<string> implements Unmarshal<any> {
 
 export class BinaryEntity extends Entity<Uint8Array> implements Unmarshal<Uint8Array> {
 
-    constructor(private data: Uint8Array) {
+    constructor(private data: Uint8Array = new Uint8Array([])) {
         super(MediaType.APPLICATION_OCTET_STREAM_TYPE);
     }
 

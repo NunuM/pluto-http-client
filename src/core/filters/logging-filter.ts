@@ -10,10 +10,7 @@ export class LoggingFilter implements Filter {
     }
 
     filter(requestContext: RequestContext, responseContent?: ResponseContext) {
-
-        this.loggerFn(`URL:${requestContext.url().toString()}\nMethod:${requestContext.method()}`);
-        this.loggerFn(`Status:${responseContent?.getStatus()}`);
-
+        this.loggerFn(`URL:${requestContext.url().toString()}\nMethod:${requestContext.method()}\nStatus:${responseContent?.getStatus()}`);
     }
 
     order(): FilterOrder {

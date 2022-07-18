@@ -144,7 +144,10 @@ export abstract class NodeRequest implements RequestBuilder, RequestContextStrea
         return this.method;
     }
 
-    protected static writeEntity<T>(entity: Entity<T>, sink: Writable, cb: (e: Error) => void) {
+    protected static writeEntity<T>(entity: Entity<T>,
+                                    sink: Writable,
+                                    transformers: Transform[],
+                                    cb: (e: Error) => void) {
         return entity
             .marshal()
             .then((data) => {
@@ -157,7 +160,7 @@ export abstract class NodeRequest implements RequestBuilder, RequestContextStrea
                 }
 
                 // @ts-ignore
-                pipeline(bodyStream, ...this.transformers, sink, (error) => {
+                pipeline(bodyStream, ...transformers, sink, (error) => {
                     if (error) {
                         cb(error);
                     }
@@ -214,7 +217,7 @@ export class Http2NodeRequest extends NodeRequest {
 
             if (entity) {
                 Http2NodeRequest
-                    .writeEntity(entity, stream, reject)
+                    .writeEntity(entity, stream, this.transformers, reject)
                     .catch(reject);
             } else {
                 stream.end();
@@ -262,7 +265,7 @@ export class HttpNodeRequest extends NodeRequest {
 
             if (entity) {
                 HttpNodeRequest
-                    .writeEntity(entity, this.req, reject)
+                    .writeEntity(entity, this.req, this.transformers, reject)
                     .catch(reject);
             } else {
                 this.req.end();
