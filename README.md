@@ -1,5 +1,7 @@
 # Pluto HTTP Client
 
+[![NPM version][npm-image]][npm-url]
+
 HTTP client for NodeJS. Inspired in the Java JAX-RS spec, so you can expect excellence, versatility and extensibility.
 
 ## Motivation
@@ -174,3 +176,6 @@ interface Response {
     
 }
 ```
+
+[npm-url]: https://www.npmjs.com/package/pluto-http-client
+[npm-image]: https://img.shields.io/npm/v/pluto-http-client.svg
