@@ -35,12 +35,19 @@ export enum HttpHeaders {
     COOKIE = "Cookie",
     SET_COOKIE = "Set-Cookie",
     LAST_EVENT_ID_HEADER = "Last-Event-ID",
+    X_REQUEST_ID = "X-Request-ID",
+    X_CORRELATION_ID = "X-Correlation-ID"
 }
 
 export function fromMap(multiValueMap: MultiValueMap<Header>): { [key: string]: string } {
-    const obj : { [key: string]: string } = {};
-    for (let [k, header] of multiValueMap.entries()) {
-        obj[k] = Array.from(header.entries()).map(([_, h]) => h.value).join(",")
+    const obj: { [key: string]: string } = {};
+    for (let [k, headers] of multiValueMap.entries()) {
+        const values = Array.from(headers.entries()).map(([_, h]) => h.value).join(",")
+        if (headers.length > 0) {
+            obj[headers[0].key] = values;
+        } else {
+            obj[k] = values;
+        }
     }
 
     return obj;

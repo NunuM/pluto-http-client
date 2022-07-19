@@ -1,6 +1,10 @@
 {
   "name": "pluto-http-client",
-  "version": "1.0.3",
+  "version": "1.0.5",
+  "repository": {
+    "url": "https://github.com/NunuM/pluto-http-client",
+    "type": "git"
+  },
   "description": "HTTP client for NodeJS. Inspired in the Java JAX-RS spec so you can expect excellence, versatility and extensibility.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
