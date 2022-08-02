@@ -196,9 +196,9 @@ export class Http2NodeRequest extends NodeRequest {
 
             const stream = this.req.request(headers);
 
-            stream.on("response", (headers, flags) => {
+            stream.on("response", (responseHeaders, _flags) => {
 
-                const response = new NodeResponse(headers, stream, headers[":status"]);
+                const response = new NodeResponse(responseHeaders, stream, responseHeaders[":status"]);
 
                 this.executePostFilters(requestContext, response);
 

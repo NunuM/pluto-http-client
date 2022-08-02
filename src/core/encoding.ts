@@ -9,13 +9,13 @@ import {RequestContext} from "./request-context";
 
 export abstract class Encoding extends Header implements Filter {
 
-    protected constructor(private _format = "*", qualityValue?: number) {
+    protected constructor(private _format = "*", _qualityValue?: number) {
         super(HttpHeaders.ACCEPT_ENCODING, _format);
     }
 
     filter(_: RequestContext, responseContext?: ResponseContext) {
         if (responseContext) {
-            responseContext.getHeaderString(HttpHeaders.CONTENT_ENCODING).startsWith(this._format)
+            if(responseContext.getHeaderString(HttpHeaders.CONTENT_ENCODING).startsWith(this._format))
             {
                 responseContext.pipe(this.getCompressor());
             }

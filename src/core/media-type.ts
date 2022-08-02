@@ -51,10 +51,10 @@ export class MediaType implements Equals {
         if (!other) {
             return false;
         } else {
-            return (this.type.toLowerCase() == this.type.toLowerCase()
+            return (this.type.toLowerCase() == other.type.toLowerCase()
                     || this.isWildcardType()
                     || other.isWildcardType())
-                && (this.subtype.toLowerCase() === other.subtype
+                && (this.subtype.toLowerCase() === other.subtype.toLowerCase()
                     || this.isWildcardSubtype()
                     || other.isWildcardSubtype());
         }
