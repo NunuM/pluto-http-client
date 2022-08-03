@@ -97,8 +97,11 @@ export class HttpHeaderReader {
     }
 
 
-    next(skipWhiteSpace: boolean = true, preserveBackslash = false) {
-        return this.event = this.process(this.getNextCharacter(skipWhiteSpace), preserveBackslash);
+    next(skipWhiteSpace: boolean = true, preserveBackslash = false): Event {
+
+        this.event = this.process(this.getNextCharacter(skipWhiteSpace), preserveBackslash);
+
+        return this.event;
     }
 
     getNextCharacter(skipWhiteSpace: boolean): number {

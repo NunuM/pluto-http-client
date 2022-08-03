@@ -1,12 +1,13 @@
 import {
+    ClientBuilder,
+    Entity,
     EntityTag,
     Header,
     HttpHeaders,
+    LoggingFilter,
     MediaType,
-    ClientBuilder,
-    TimeUnit,
     StringEntity,
-    LoggingFilter
+    TimeUnit
 } from '../src';
 
 
@@ -51,7 +52,7 @@ describe('testing http client', () => {
 
         await new Promise((resolve, reject) => {
             stream.on("finish", () => {
-                if(fs.existsSync('get_rsp.txt')) {
+                if (fs.existsSync('get_rsp.txt')) {
                     const body = fs.readFileSync('get_rsp.txt').toString('utf-8');
                     expect(body).toBe("This is a test");
 
@@ -66,6 +67,59 @@ describe('testing http client', () => {
                 reject(err);
             });
         });
+    });
+
+
+    test('test http2 GET request', async () => {
+
+        const webTarget = new ClientBuilder()
+            .withTimeout(120, TimeUnit.Minutes)
+            .withFilter(new LoggingFilter((msg) => {
+                console.log(msg);
+            }))
+            .header(HttpHeaders.USER_AGENT, `1.0.0`)
+            .withHttp2()
+            .build()
+            .target('https://talos.sh');
+
+        const response = await webTarget
+            .path("/")
+            .request()
+            .get();
+
+        const data = await response.readEntity(new StringEntity())
+        expect(data.length >= 0).toBe(true);
+
+    });
+
+
+    test('test http2 POST request', async () => {
+
+        try {
+            const webTarget = new ClientBuilder()
+                .withTimeout(120, TimeUnit.Minutes)
+                .withFilter(new LoggingFilter((msg) => {
+                    console.log(msg);
+                }))
+                .header(HttpHeaders.USER_AGENT, `1.0.0`)
+                .withHttp2()
+                .build()
+                .target('https://run.mocky.io');
+
+            const payload = Entity.json({hosting: []});
+
+            const response = await webTarget
+                .path("/v3/de314aa8-a521-47c4-8ff3-69b447dab89b")
+                .addQueryParam("test","test")
+                .request()
+                .post(payload);
+
+            const data = await response.readEntity(new StringEntity())
+            expect(data.length >= 0).toBe(true);
+        } catch (e) {
+            console.log("e", e);
+        }
+
     });
 
 

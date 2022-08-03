@@ -7,7 +7,7 @@ import {Unmarshal} from "./unmarshal";
 
 export abstract class Entity<T> implements Marshal<T> {
 
-    constructor(private _mediaType: MediaType) {
+    constructor(protected _mediaType: MediaType) {
     }
 
     static json(obj?: any): Entity<string> {
@@ -29,12 +29,12 @@ export abstract class Entity<T> implements Marshal<T> {
 
 export class StringEntity extends Entity<string> implements Unmarshal<string> {
 
-    constructor(private data: string = "") {
+    constructor(private _data: string = "") {
         super(MediaType.ANY_TEXT_TYPE);
     }
 
     marshal(): Promise<Uint8Array | Readable> {
-        return Promise.resolve(Buffer.from(this.data));
+        return Promise.resolve(Buffer.from(this._data));
     }
 
     unmarshal(bytes: Buffer, mediaType?: MediaType): Promise<string> {
@@ -45,13 +45,13 @@ export class StringEntity extends Entity<string> implements Unmarshal<string> {
 
 export class JsonEntity extends Entity<string> implements Unmarshal<any> {
 
-    constructor(private data: any = {}) {
+    constructor(private _data: any = {}) {
         super(MediaType.APPLICATION_JSON_TYPE);
     }
 
     marshal(): Promise<Uint8Array | Readable> {
         try {
-            return Promise.resolve(Buffer.from(JSON.stringify(this.data)));
+            return Promise.resolve(Buffer.from(JSON.stringify(this._data)));
         } catch (e) {
             return Promise.reject(e);
         }
@@ -73,12 +73,12 @@ export class JsonEntity extends Entity<string> implements Unmarshal<any> {
 
 export class BinaryEntity extends Entity<Uint8Array> implements Unmarshal<Uint8Array> {
 
-    constructor(private data: Uint8Array = new Uint8Array([])) {
+    constructor(private _data: Uint8Array = new Uint8Array([])) {
         super(MediaType.APPLICATION_OCTET_STREAM_TYPE);
     }
 
     marshal(): Promise<Uint8Array | Readable> {
-        return Promise.resolve(this.data);
+        return Promise.resolve(this._data);
     }
 
     unmarshal(bytes: Buffer, mediaType?: MediaType): Promise<Uint8Array> {
@@ -89,18 +89,18 @@ export class BinaryEntity extends Entity<Uint8Array> implements Unmarshal<Uint8A
 
 export class FormUrlEncoded extends Entity<string> {
 
-    constructor(private entity: { [key: string]: string } | PrimitiveMultiValueMap) {
+    constructor(private _entity: { [key: string]: string } | PrimitiveMultiValueMap) {
         super(MediaType.APPLICATION_FORM_URLENCODED_TYPE);
     }
 
     marshal(): Promise<Uint8Array | Readable> {
         let body;
 
-        if (this.entity instanceof PrimitiveMultiValueMap) {
+        if (this._entity instanceof PrimitiveMultiValueMap) {
             body = encodeURI(
                 Object.entries(
                     Object.fromEntries(
-                        this.entity.entries()
+                        this._entity.entries()
                     )
                 ).map(([k, values]) => {
                     const r: string[] = [];
@@ -113,7 +113,7 @@ export class FormUrlEncoded extends Entity<string> {
 
                 }).join("&"));
         } else {
-            body = encodeURI(Object.entries(this.entity).map(([k, v]) => `${k}=${v}`).join("&"));
+            body = encodeURI(Object.entries(this._entity).map(([k, v]) => `${k}=${v}`).join("&"));
         }
 
         return Promise.resolve(Buffer.from(body));

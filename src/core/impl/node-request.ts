@@ -1,5 +1,5 @@
 import {Method} from "../method";
-import {URL} from "url";
+import {URL, urlToHttpOptions} from "url";
 import {Encoding} from "../encoding";
 import {Response, ResponseContext} from "../response";
 import {CacheControl} from "../cache-control";
@@ -15,18 +15,18 @@ import {Cookie} from "../cookie";
 import {Entity} from "../../framework/entity";
 import {pipeline, Readable, Transform, Writable} from "stream";
 import {RequestContext, RequestContextStreaming, RequestInformation} from "../request-context";
-import {ClientHttp2Session, constants as Http2Constants} from "http2";
+import {ClientHttp2Session, ClientHttp2Stream, constants as Http2Constants} from "http2";
 import {NodeResponse} from "./node-response";
 
 export abstract class NodeRequest implements RequestBuilder, RequestContextStreaming, RequestInformation {
 
-    protected method: Method;
+    protected _method: Method;
     protected readonly headers: MultiValueMap<Header>;
-    protected transformers: Transform[] = [];
+    protected _transformers: Transform[] = [];
 
-    constructor(protected client: Client, protected url: URL) {
-        this.method = Method.GET;
-        this.headers = this.client.headers;
+    constructor(protected _client: Client, protected _url: URL) {
+        this._method = Method.GET;
+        this.headers = this._client.headers;
     }
 
     getHeaders(): MultiValueMapType {
@@ -46,7 +46,7 @@ export abstract class NodeRequest implements RequestBuilder, RequestContextStrea
     acceptEncoding(encoding: Encoding): RequestBuilder {
         this.setHeader(encoding.key, encoding.value);
 
-        this.client.filters.put(encoding.order(), encoding);
+        this._client.filters.put(encoding.order(), encoding);
 
         return this;
     }
@@ -58,7 +58,7 @@ export abstract class NodeRequest implements RequestBuilder, RequestContextStrea
     }
 
     build<T>(method: Method, entity?: Entity<T>): Promise<Response> {
-        this.method = method;
+        this._method = method;
 
         return this.makeRequest(entity);
     }
@@ -76,7 +76,7 @@ export abstract class NodeRequest implements RequestBuilder, RequestContextStrea
     }
 
     delete<T>(entity: Entity<T>): Promise<Response> {
-        this.method = Method.DELETE;
+        this._method = Method.DELETE;
 
         return this.makeRequest(entity);
     }
@@ -92,20 +92,20 @@ export abstract class NodeRequest implements RequestBuilder, RequestContextStrea
     }
 
     post<T>(entity: Entity<T>): Promise<Response> {
-        this.method = Method.POST;
+        this._method = Method.POST;
 
         return this.makeRequest(entity);
     }
 
     put<T>(entity: Entity<T>): Promise<Response> {
 
-        this.method = Method.PUT;
+        this._method = Method.PUT;
 
         return this.makeRequest(entity);
     }
 
     protected executePreFilters(request: RequestContext) {
-        for (let filters of this.client.filters.subMap(Number.MIN_SAFE_INTEGER, 0)) {
+        for (let filters of this._client.filters.subMap(Number.MIN_SAFE_INTEGER, 0)) {
             for (const [_, filter] of filters.entries()) {
                 filter.filter(request);
             }
@@ -113,7 +113,7 @@ export abstract class NodeRequest implements RequestBuilder, RequestContextStrea
     }
 
     protected executePostFilters(request: RequestContext, response: ResponseContext) {
-        for (let filters of this.client.filters.subMap(0, Number.MAX_SAFE_INTEGER)) {
+        for (let filters of this._client.filters.subMap(0, Number.MAX_SAFE_INTEGER)) {
             for (const [_, filter] of filters.entries()) {
                 filter.filter(request, response);
             }
@@ -133,15 +133,15 @@ export abstract class NodeRequest implements RequestBuilder, RequestContextStrea
 
 
     transform(transform: Transform) {
-        this.transformers.push(transform);
+        this._transformers.push(transform);
     }
 
     getUrl(): URL {
-        return this.url;
+        return this._url;
     }
 
     getMethod(): Method {
-        return this.method;
+        return this._method;
     }
 
     protected static writeEntity<T>(entity: Entity<T>,
@@ -171,13 +171,13 @@ export abstract class NodeRequest implements RequestBuilder, RequestContextStrea
 
 export class Http2NodeRequest extends NodeRequest {
 
-    private req: ClientHttp2Session;
-    private responseHeaders: MultiValueMap<Header>;
+    private _req: ClientHttp2Session;
+    private _responseHeaders: MultiValueMap<Header>;
 
     constructor(client: Client, url: URL, session: ClientHttp2Session, private _error?: Error) {
         super(client, url);
-        this.req = session;
-        this.responseHeaders = new MultiValueMap<Header>();
+        this._req = session;
+        this._responseHeaders = new MultiValueMap<Header>();
     }
 
     protected execute<T>(entity?: Entity<T>): Promise<Response> {
@@ -192,9 +192,12 @@ export class Http2NodeRequest extends NodeRequest {
 
             const headers = fromMap(this.headers);
 
-            headers[Http2Constants.HTTP2_HEADER_PATH] = this.url.pathname;
+            headers[Http2Constants.HTTP2_HEADER_METHOD] = this._method;
+            headers[Http2Constants.HTTP2_HEADER_PATH] = this.getPath();
 
-            const stream = this.req.request(headers);
+            const stream: ClientHttp2Stream = this._req.request(headers, {
+                endStream: !entity
+            });
 
             stream.on("response", (responseHeaders, _flags) => {
 
@@ -217,12 +220,39 @@ export class Http2NodeRequest extends NodeRequest {
 
             if (entity) {
                 Http2NodeRequest
-                    .writeEntity(entity, stream, this.transformers, reject)
+                    .writeEntity(entity, stream, this._transformers, reject)
                     .catch(reject);
             } else {
                 stream.end();
             }
         });
+    }
+
+    /**
+     * Get request path
+     * @private
+     */
+    private getPath(): string {
+        const urlParts = urlToHttpOptions(this._url);
+        let path = "/";
+
+        if (urlParts.path) {
+            path = urlParts.path;
+        }
+
+        //@ts-ignore
+        if(urlParts.search) {
+            //@ts-ignore
+            path += urlParts.search
+        }
+
+        //@ts-ignore
+        if(urlParts.hash) {
+            //@ts-ignore
+            path += urlParts.hash
+        }
+
+        return path;
     }
 }
 
@@ -236,14 +266,14 @@ export class HttpNodeRequest extends NodeRequest {
 
             const requestContext = new RequestContext(this);
 
-            const lib = this.url.protocol === 'https:' ? https : http;
+            const lib = this._url.protocol === 'https:' ? https : http;
 
-            this.req = lib.request(this.url, {
-                timeout: this.client.timeout,
+            this.req = lib.request(this._url, {
+                timeout: this._client.timeout,
                 headers: fromMap(this.headers),
-                method: this.method,
-                agent: this.client.agent,
-                rejectUnauthorized: !this.client.allowInsecure
+                method: this._method,
+                agent: this._client.agent,
+                rejectUnauthorized: !this._client.allowInsecure
             }, (response) => {
 
                 const nodeResponse = new NodeResponse(response.headers, response, response.statusCode);
@@ -265,7 +295,7 @@ export class HttpNodeRequest extends NodeRequest {
 
             if (entity) {
                 HttpNodeRequest
-                    .writeEntity(entity, this.req, this.transformers, reject)
+                    .writeEntity(entity, this.req, this._transformers, reject)
                     .catch(reject);
             } else {
                 this.req.end();

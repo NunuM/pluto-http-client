@@ -5,35 +5,35 @@ import {Identifiable} from "../framework/identifiable";
 
 export class MultiValueMap<T extends Cloneable<T> & Equals & Identifiable> {
 
-    constructor(private items = new Map<string, List<T>>) {
+    constructor(private _items = new Map<string, List<T>>) {
     }
 
     public add(obj: T): boolean {
 
         const k = obj.id().toLowerCase();
 
-        if (!this.items.has(k)) {
-            this.items.set(k, new List<T>());
+        if (!this._items.has(k)) {
+            this._items.set(k, new List<T>());
         }
 
-        this.items.get(k)?.push(obj);
+        this._items.get(k)?.push(obj);
 
         return true;
     }
 
     public get(key: string): List<T> | undefined {
-        return this.items.get(key.toLowerCase());
+        return this._items.get(key.toLowerCase());
     }
 
     public remove(key: string): boolean {
-        return this.items.delete(key.toLowerCase());
+        return this._items.delete(key.toLowerCase());
     }
 
     clone(): MultiValueMap<T> {
 
         const newMap = new Map();
 
-        for (let [key, value] of this.items.entries()) {
+        for (let [key, value] of this._items.entries()) {
             newMap.set(key, value.clone());
         }
 
@@ -41,7 +41,7 @@ export class MultiValueMap<T extends Cloneable<T> & Equals & Identifiable> {
     }
 
     entries(): IterableIterator<[string, List<T>]> {
-        return this.items.entries();
+        return this._items.entries();
     }
 }
 
@@ -78,25 +78,25 @@ export class WrappedPrimitive<T> implements Cloneable<WrappedPrimitive<T>>, Equa
 
 export class PrimitiveMultiValueMap {
 
-    private map: MultiValueMap<WrappedPrimitive<Primitive>>;
+    private _map: MultiValueMap<WrappedPrimitive<Primitive>>;
 
     constructor() {
-        this.map = new MultiValueMap<WrappedPrimitive<Primitive>>();
+        this._map = new MultiValueMap<WrappedPrimitive<Primitive>>();
     }
 
     public add(key: Primitive, value: Primitive): boolean {
-        return this.map.add(new WrappedPrimitive<Primitive>(key, value));
+        return this._map.add(new WrappedPrimitive<Primitive>(key, value));
     }
 
     public remove(key: Primitive): boolean {
-        return this.map.remove(key.toString());
+        return this._map.remove(key.toString());
     }
 
 
     entries(): IterableIterator<[string, Primitive[]]> {
         const o: { [key: string]: Primitive[] } = {};
 
-        for (const [key, list] of this.map.entries()) {
+        for (const [key, list] of this._map.entries()) {
             let k = key;
 
             const values: Primitive[] = [];
