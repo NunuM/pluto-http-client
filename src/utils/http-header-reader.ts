@@ -394,10 +394,9 @@ export class HttpHeaderReader {
 
         let cookie: Cookie | undefined = undefined;
 
-        const bites = header.split(/[;]/);
-
-        for (let i = 0; i < bites.length; i++) {
-            const crumbs = bites[i].split("=", 2);
+        const bites = header.split(/;/);
+        for (let bite of bites) {
+            const crumbs = bite.split("=", 2);
             const name = crumbs.length > 0 ? crumbs[0].trim() : "";
             let value = crumbs.length > 1 ? crumbs[1].trim() : "";
             if (value.startsWith("\"") && value.endsWith("\"") && value.length > 1) {

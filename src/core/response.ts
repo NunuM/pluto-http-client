@@ -8,12 +8,12 @@ import {EntityTag} from "./entity-tag";
 import ReadableStream = NodeJS.ReadableStream;
 
 export class Family {
-    private static readonly INFORMATIONAL = 0;
-    private static readonly SUCCESSFUL = 1;
-    private static readonly REDIRECTION = 2;
-    private static readonly CLIENT_ERROR = 2;
-    private static readonly SERVER_ERROR = 2;
-    private static readonly OTHER = 2;
+    private static readonly INFORMATIONAL = 1;
+    private static readonly SUCCESSFUL = 2;
+    private static readonly REDIRECTION = 3;
+    private static readonly CLIENT_ERROR = 4;
+    private static readonly SERVER_ERROR = 5;
+    private static readonly OTHER = 6;
 
     private constructor(private _familyNumber: number) {
     }
@@ -43,7 +43,7 @@ export class Family {
     }
 
     static familyOf(statusCode: number): Family {
-        switch (statusCode / 100) {
+        switch (Math.trunc(statusCode / 100)) {
             case 1:
                 return new Family(Family.INFORMATIONAL);
             case 2:

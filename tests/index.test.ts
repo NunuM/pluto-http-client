@@ -110,7 +110,7 @@ describe('testing http client', () => {
 
             const response = await webTarget
                 .path("/v3/de314aa8-a521-47c4-8ff3-69b447dab89b")
-                .addQueryParam("test","test")
+                .addQueryParam("test", "test")
                 .request()
                 .post(payload);
 

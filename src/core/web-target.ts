@@ -24,7 +24,7 @@ export class WebTarget {
     }
 
     request(): RequestBuilder {
-        return new HttpNodeRequest(this._client, this._url);
+        return new HttpNodeRequest(this._client.snapshot(), new URL(this._url.toString()));
     }
 
 }
@@ -52,8 +52,8 @@ export class Http2WebTarget extends WebTarget {
 
     request(): RequestBuilder {
         return new Http2NodeRequest(
-            this._client,
-            this._url,
+            this._client.snapshot(),
+            new URL(this._url.toString()),
             this._http2Client,
             this._error
         );

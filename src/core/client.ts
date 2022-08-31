@@ -51,7 +51,7 @@ export class Client {
         return this._allowInsecure;
     }
 
-    protected snapshot(): Client {
+    public snapshot(): Client {
         return new Client(
             this._headers.clone(),
             this._filters.clone(),
