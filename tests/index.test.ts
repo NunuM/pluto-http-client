@@ -7,7 +7,7 @@ import {
     LoggingFilter,
     MediaType,
     StringEntity,
-    TimeUnit
+    TimeUnit,
 } from '../src';
 
 
@@ -68,6 +68,19 @@ describe('testing http client', () => {
             });
         });
     });
+
+/*    test('binary entity', async () => {
+
+        const response = await client.target('http://localhost:7666')
+            .path('/')
+            .request()
+            .post(new BinaryEntity(Uint8Array.from([9, 9, 6, 1, 3, 4])));
+
+
+        expect(response.getStatus()).toBe(200);
+
+
+    }, 5 * TimeUnit.Minutes);*/
 
 
     test('test http2 GET request', async () => {

@@ -17,6 +17,7 @@ import {pipeline, Readable, Transform, Writable} from "stream";
 import {RequestContext, RequestContextStreaming, RequestInformation} from "../request-context";
 import {ClientHttp2Session, ClientHttp2Stream, constants as Http2Constants} from "http2";
 import {NodeResponse} from "./node-response";
+import {Buffer} from "buffer";
 
 export abstract class NodeRequest implements RequestBuilder, RequestContextStreaming, RequestInformation {
 
@@ -155,8 +156,10 @@ export abstract class NodeRequest implements RequestBuilder, RequestContextStrea
 
                 if (data instanceof Readable) {
                     bodyStream = data;
-                } else {
+                } else if (data instanceof Buffer) {
                     bodyStream = Readable.from(data)
+                } else {
+                    bodyStream = Readable.from(Buffer.from(data));
                 }
 
                 // @ts-ignore
@@ -241,13 +244,13 @@ export class Http2NodeRequest extends NodeRequest {
         }
 
         //@ts-ignore
-        if(urlParts.search) {
+        if (urlParts.search) {
             //@ts-ignore
             path += urlParts.search
         }
 
         //@ts-ignore
-        if(urlParts.hash) {
+        if (urlParts.hash) {
             //@ts-ignore
             path += urlParts.hash
         }
