@@ -98,6 +98,8 @@ export interface Response {
     readEntity<T>(unmarshaller: Unmarshal<T>): Promise<T>
 
     readEntity(writable: Writable): Writable
+
+    close(): void;
 }
 
 export interface ResponseContextStreaming {

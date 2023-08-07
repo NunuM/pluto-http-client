@@ -6,13 +6,9 @@ HTTP client for NodeJS. Inspired in the Java JAX-RS spec, so you can expect exce
 
 ## Motivation
 
-I've NodeJS apps that are using the famous request library, but was we all know, it was discontinued since 2020. Worst
-then that, they do not allow any MR from the community to update nor make security patches, like waining kids, they
-always refer to the post that they have discontinued even still that they have 19K download weekly passed 2 years of
-this repo close down (it's a f*** HTTP client, it's not a cutting edge piece of code). So I need a substitute for it,
-and after tried the axios and other, they all want to give FE and BE compatibility (to not talk of ESM modules), I dont
-want to care about this compatibility, I want a FK library thatt works with a well defined API and uses the latest
-NodeJS features.
+I have Node.js applications that currently rely on the well-known "request" library. However, as we're all aware, this library has been discontinued since 2020. To compound the issue, they've opted not to accept any community merge requests for updates or security patches. It's frustrating, resembling an admonishing parent, they consistently point to the discontinuation post, even though the library continues to see around 19,000 weekly downloads even after two years of being abandoned. It's worth noting that we're discussing an HTTP client here; it's not a complex, cutting-edge codebase.
+
+Given this situation, I'm actively seeking a suitable replacement. While I experimented with alternatives like "axios" and others, they all emphasize front-end and back-end compatibility (not to mention ESM module compatibility), which isn't my primary concern. I'm in search of a library that provides a straightforward and robust API, harnessing the latest features of Node.js, without being encumbered by compatibility intricacies.
 
 ## Features
 
@@ -20,11 +16,11 @@ NodeJS features.
 * Filters / Observability
 * Streaming
 * Well-defined API
-* 0 dependencies
+* **0 dependencies**
 
 ### Examples
 
-#### Simple HTTP GET
+#### HTTP GET Request
 
 ```typescript
  const client = new ClientBuilder()
@@ -41,10 +37,15 @@ const response = await target
     .header(HttpHeaders.ACCEPT, MediaType.ANY_TEXT_TYPE.toString())
     .get();
 
-const body = await response.readEntity(new StringEntity());
+if(response.getStatusInfo().getFamily().isSuccessful()) {
+    const body = await response.readEntity(new StringEntity());
+} else {
+    console.log("Response status code:", response.getStatus());
+}
+
 ```
 
-#### Simple HTTP GET and Stream Response
+#### HTTP GET Request and redirect to Writable Stream
 
 ```typescript
  const client = new ClientBuilder()
@@ -64,7 +65,7 @@ const response = await target
 response.readEntity(fs.createWriteStream('get_response.txt'));
 ```
 
-### POST JSON Request
+### HTTP POST JSON Request
 
 ```typescript
  const client = new ClientBuilder()
@@ -81,7 +82,7 @@ const response = await target
     .post(Entity.json({test: 1}));
 
 const obj = await response.readEntity(new JsonEntity());
-console.log(obj);
+
 ```
 
 ### HTTP2
