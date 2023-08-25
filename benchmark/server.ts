@@ -11,7 +11,7 @@ const workers: number = parseInt(process.env.WORKERS) || 1;
 
 const startBenchmark = () => {
 
-    const benchmarkProcess = child_process.spawn('node', [
+    const benchmarkProcess = child_process.spawn('/usr/local/bin/node', [
         '--require',
         'ts-node/register',
         'benchmark/index.ts',
