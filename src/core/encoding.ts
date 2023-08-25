@@ -9,14 +9,13 @@ import {RequestContext} from "./request-context";
 
 export abstract class Encoding extends Header implements Filter {
 
-    protected constructor(private _format = "*", _qualityValue?: number) {
-        super(HttpHeaders.ACCEPT_ENCODING, _format);
+    protected constructor(format = "*", _qualityValue?: number) {
+        super(HttpHeaders.ACCEPT_ENCODING, format);
     }
 
     filter(_: RequestContext, responseContext?: ResponseContext) {
         if (responseContext) {
-            if(responseContext.getHeaderString(HttpHeaders.CONTENT_ENCODING).startsWith(this._format))
-            {
+            if (responseContext.getHeaderString(HttpHeaders.CONTENT_ENCODING).startsWith(this.value)) {
                 responseContext.pipe(this.getCompressor());
             }
         }
@@ -32,15 +31,15 @@ export abstract class Encoding extends Header implements Filter {
 
 export class GzipEncoding extends Encoding {
 
-    private readonly _compression: zlib.Gzip;
+    private readonly _zlibOptions?: zlib.ZlibOptions;
 
     constructor(zlibOptions?: zlib.ZlibOptions) {
         super("gzip");
-        this._compression = zlib.createGunzip(zlibOptions);
+        this._zlibOptions = zlibOptions;
     }
 
     getCompressor(): stream.Readable {
-        return this._compression;
+        return zlib.createGunzip(this._zlibOptions);
     }
 }
 

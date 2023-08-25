@@ -15,7 +15,10 @@ export class Family {
     private static readonly SERVER_ERROR = 5;
     private static readonly OTHER = 6;
 
-    private constructor(private _familyNumber: number) {
+    private readonly _familyNumber: number;
+
+    private constructor(familyNumber: number) {
+        this._familyNumber = familyNumber;
     }
 
     isInformal(): boolean {
@@ -75,30 +78,74 @@ export class StatusType {
     }
 }
 
+/**
+ * Represents an HTTP response returned from a request.
+ */
 export interface Response {
 
+    /**
+     * Get the headers received in the response.
+     */
     getHeaders(): MultiValueMapType;
 
+    /**
+     * Get the status information of the response.
+     */
     getStatusInfo(): StatusType
 
+    /**
+     * Get the HTTP status code of the response.
+     */
     getStatus(): number;
 
+    /**
+     * Get the media type of the response, if available.
+     */
     getMediaType(): MediaType | undefined;
 
+    /**
+     * Get the entity tag (ETag) of the response, if available.
+     */
     getEtag(): EntityTag | undefined;
 
+    /**
+     * Get the date of the response, if available.
+     */
     getDate(): Date | undefined;
 
+    /**
+     * Get the last modified date of the response, if available.
+     */
     getLastModified(): Date | undefined;
 
+    /**
+     * Get the header value associated with the given key.
+     * @param key - The header key.
+     */
     getHeaderString(key: string): string
 
+    /**
+     * Get the cookies received in the response.
+     */
     getCookies(): MultiValueMap<Cookie>;
 
+    /**
+     * Read and parse the entity body of the response using a specified unmarshaller.
+     * @param unmarshaller - The unmarshaller to use.
+     * @returns A promise that resolves to the parsed entity.
+     */
     readEntity<T>(unmarshaller: Unmarshal<T>): Promise<T>
 
+    /**
+     * Read the entity body of the response and write it to a writable stream.
+     * @param writable - The writable stream to write the entity body to.
+     * @returns The same writable stream passed as input.
+     */
     readEntity(writable: Writable): Writable
 
+    /**
+     * Close the response and any associated resources.
+     */
     close(): void;
 }
 

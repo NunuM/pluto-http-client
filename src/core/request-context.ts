@@ -22,47 +22,50 @@ export interface RequestInformation {
 
 export class RequestContext {
 
-    constructor(private req: RequestBuilder & RequestContextStreaming & RequestInformation) {
+    private readonly _req: RequestBuilder & RequestContextStreaming & RequestInformation;
+
+    constructor(req: RequestBuilder & RequestContextStreaming & RequestInformation) {
+        this._req = req;
     }
 
     accept(mediaType: MediaType) {
-        this.req.accept(mediaType);
+        this._req.accept(mediaType);
     }
 
     acceptLanguage(locale: string) {
-        this.req.acceptLanguage(locale);
+        this._req.acceptLanguage(locale);
     }
 
     acceptEncoding(encoding: Encoding) {
-        this.req.acceptEncoding(encoding);
+        this._req.acceptEncoding(encoding);
     }
 
     cacheControl(cacheControl: CacheControl) {
-        this.req.cacheControl(cacheControl);
+        this._req.cacheControl(cacheControl);
     }
 
     cookie(cookie: Cookie) {
-        this.req.cookie(cookie);
+        this._req.cookie(cookie);
     }
 
     header(key: string, value: string) {
-        this.req.header(key, value);
+        this._req.header(key, value);
     }
 
     url(): URL {
-        return this.req.getUrl();
+        return this._req.getUrl();
     }
 
     method(): Method {
-        return this.req.getMethod();
+        return this._req.getMethod();
     }
 
     headers(): MultiValueMapType {
-        return this.req.getHeaders();
+        return this._req.getHeaders();
     }
 
     pipe(transform: Transform) {
-        this.req.transform(transform);
+        this._req.transform(transform);
     }
 
 }

@@ -21,13 +21,19 @@ import {Buffer} from "buffer";
 
 export abstract class NodeRequest implements RequestBuilder, RequestContextStreaming, RequestInformation {
 
+    protected _url: URL;
+    protected _client: Client;
     protected _method: Method;
+    protected readonly _abortSignal?: AbortSignal;
     protected readonly headers: MultiValueMap<Header>;
-    protected _transformers: Transform[] = [];
+    protected readonly _transformers: Transform[] = [];
 
-    constructor(protected _client: Client, protected _url: URL) {
+    constructor(client: Client, url: URL, abortSignal?: AbortSignal) {
+        this._url = url;
+        this._client = client;
         this._method = Method.GET;
         this.headers = this._client.headers;
+        this._abortSignal = abortSignal;
     }
 
     getHeaders(): MultiValueMapType {
@@ -174,13 +180,15 @@ export abstract class NodeRequest implements RequestBuilder, RequestContextStrea
 
 export class Http2NodeRequest extends NodeRequest {
 
-    private _req: ClientHttp2Session;
-    private _responseHeaders: MultiValueMap<Header>;
+    private readonly _req: ClientHttp2Session;
+    private readonly _responseHeaders: MultiValueMap<Header>;
+    private readonly _error?: Error;
 
-    constructor(client: Client, url: URL, session: ClientHttp2Session, private _error?: Error) {
-        super(client, url);
+    constructor(client: Client, url: URL, session: ClientHttp2Session, abortSignal?: AbortSignal, error?: Error) {
+        super(client, url, abortSignal);
         this._req = session;
         this._responseHeaders = new MultiValueMap<Header>();
+        this._error = error;
     }
 
     protected execute<T>(entity?: Entity<T>): Promise<Response> {
@@ -199,7 +207,8 @@ export class Http2NodeRequest extends NodeRequest {
             headers[Http2Constants.HTTP2_HEADER_PATH] = this.getPath();
 
             const stream: ClientHttp2Stream = this._req.request(headers, {
-                endStream: !entity
+                endStream: !entity,
+                signal: this._abortSignal,
             });
 
             stream.on("response", (responseHeaders, _flags) => {
@@ -276,10 +285,14 @@ export class HttpNodeRequest extends NodeRequest {
                 headers: fromMap(this.headers),
                 method: this._method,
                 agent: this._client.agent,
-                rejectUnauthorized: !this._client.allowInsecure
+                rejectUnauthorized: !this._client.allowInsecure,
+                signal: this._abortSignal,
             }, (response) => {
 
-                const nodeResponse = new NodeResponse(response.headers, response, response.statusCode);
+                const nodeResponse = new NodeResponse(
+                    response.headers,
+                    response,
+                    response.statusCode);
 
                 this.executePostFilters(requestContext, nodeResponse);
 

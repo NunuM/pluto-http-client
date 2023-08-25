@@ -7,7 +7,12 @@ import {ClientHttp2Session} from "http2";
 
 export class WebTarget {
 
-    constructor(protected _client: Client, protected _url: URL) {
+    protected readonly _client: Client;
+    protected readonly _url: URL;
+
+    constructor(client: Client, url: URL) {
+        this._client = client;
+        this._url = url;
     }
 
     path(path: string): WebTarget {
@@ -23,8 +28,8 @@ export class WebTarget {
         return this;
     }
 
-    request(): RequestBuilder {
-        return new HttpNodeRequest(this._client.snapshot(), new URL(this._url.toString()));
+    request(abortSignal?: AbortSignal): RequestBuilder {
+        return new HttpNodeRequest(this._client.snapshot(), new URL(this._url.toString()), abortSignal);
     }
 
 }
@@ -50,11 +55,12 @@ export class Http2WebTarget extends WebTarget {
         });
     }
 
-    request(): RequestBuilder {
+    request(abortSignal?: AbortSignal): RequestBuilder {
         return new Http2NodeRequest(
             this._client.snapshot(),
             new URL(this._url.toString()),
             this._http2Client,
+            abortSignal,
             this._error
         );
     }

@@ -19,8 +19,15 @@ export class MediaType implements Equals {
     public static readonly SERVER_SENT_EVENTS_TYPE = new MediaType("text", "event-stream");
     public static readonly APPLICATION_JSON_PATCH_JSON_TYPE = new MediaType("application", "json-patch+json");
 
+    private readonly _type: string;
+    private readonly _subtype: string;
+    private readonly _parameters?: Map<string, string>;
 
-    constructor(private _type: string, private _subtype: string, private _parameters?: Map<string, string>) {
+
+    constructor(type: string, subtype: string, parameters?: Map<string, string>) {
+        this._type = type;
+        this._subtype = subtype;
+        this._parameters = parameters;
     }
 
     equals(other: any): boolean {
@@ -64,7 +71,7 @@ export class MediaType implements Equals {
         const buffer = [`${this.type}/${this.subtype}`];
 
         if (this._parameters) {
-            for (const [k, v] of this._parameters?.entries()) {
+            for (const [k, v] of this._parameters.entries()) {
                 buffer.push(";", k, "=")
                 HttpHeaderReader.appendQuotedIfNonToken(buffer, v);
             }

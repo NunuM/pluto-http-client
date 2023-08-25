@@ -2,17 +2,17 @@ import {
     ClientBuilder,
     Entity,
     EntityTag,
+    GzipEncoding,
     Header,
     HttpHeaders,
     LoggingFilter,
     MediaType,
     StringEntity,
-    TimeUnit,
+    TimeUnit
 } from '../src';
 
 
 import * as fs from "fs";
-
 
 describe('testing http client', () => {
 
@@ -29,6 +29,7 @@ describe('testing http client', () => {
         const response = await target
             .path("/v3/de314aa8-a521-47c4-8ff3-69b447dab89b")
             .request()
+            .header("test", "test")
             .get();
 
         expect(response.getStatus()).toBe(200);
@@ -45,6 +46,7 @@ describe('testing http client', () => {
         const response = await target
             .path("/v3/de314aa8-a521-47c4-8ff3-69b447dab89b")
             .request()
+            .acceptEncoding(new GzipEncoding())
             .header(HttpHeaders.ACCEPT, MediaType.ANY_TEXT_TYPE.toString())
             .get();
 
@@ -69,20 +71,6 @@ describe('testing http client', () => {
         });
     });
 
-/*    test('binary entity', async () => {
-
-        const response = await client.target('http://localhost:7666')
-            .path('/')
-            .request()
-            .post(new BinaryEntity(Uint8Array.from([9, 9, 6, 1, 3, 4])));
-
-
-        expect(response.getStatus()).toBe(200);
-
-
-    }, 5 * TimeUnit.Minutes);*/
-
-
     test('test http2 GET request', async () => {
 
         const webTarget = new ClientBuilder()
@@ -101,7 +89,7 @@ describe('testing http client', () => {
             .get();
 
         const data = await response.readEntity(new StringEntity())
-        expect(data.length >= 0).toBe(true);
+        expect(data.length > 0).toBe(true);
 
     });
 
@@ -128,9 +116,9 @@ describe('testing http client', () => {
                 .post(payload);
 
             const data = await response.readEntity(new StringEntity())
-            expect(data.length >= 0).toBe(true);
+            expect(data.length > 0).toBe(true);
         } catch (e) {
-            console.log("e", e);
+            console.log("error", e);
         }
 
     });

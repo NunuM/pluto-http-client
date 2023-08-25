@@ -23,10 +23,16 @@ export class NodeResponse implements ResponseContext {
         this._reader = response;
     }
 
+    /**
+     * @inheritDoc
+     */
     getHeaders(): MultiValueMapType {
         return this._headers
     }
 
+    /**
+     * @inheritDoc
+     */
     getCookies(): MultiValueMap<Cookie> {
 
         if (!this._cookies) {
@@ -46,6 +52,9 @@ export class NodeResponse implements ResponseContext {
         return this._cookies;
     }
 
+    /**
+     * @inheritDoc
+     */
     getDate(): Date | undefined {
         if (this._headers["date"]) {
             // @ts-ignore
@@ -53,10 +62,16 @@ export class NodeResponse implements ResponseContext {
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     getHeaderString(key: string): string {
         return (this._headers[key.toLowerCase()] || "").toString();
     }
 
+    /**
+     * @inheritDoc
+     */
     getLastModified(): Date | undefined {
         if (this._headers["last-modified"]) {
             // @ts-ignore
@@ -64,6 +79,9 @@ export class NodeResponse implements ResponseContext {
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     getMediaType(): MediaType | undefined {
         if (!this._mediaType) {
             try {
@@ -79,6 +97,9 @@ export class NodeResponse implements ResponseContext {
         return this._mediaType;
     }
 
+    /**
+     * @inheritDoc
+     */
     getEtag(): EntityTag | undefined {
         if (!this._etag) {
             try {
@@ -94,18 +115,33 @@ export class NodeResponse implements ResponseContext {
         return this._etag;
     }
 
+    /**
+     * @inheritDoc
+     */
     getStatus(): number {
         return this._statusCode;
     }
 
+    /**
+     * @inheritDoc
+     */
     getStatusInfo(): StatusType {
         return new StatusType(this.getStatus());
     }
 
+    /**
+     * @inheritDoc
+     */
     readEntity<T>(unmarshaller: Unmarshal<T>): Promise<T>;
 
+    /**
+     * @inheritDoc
+     */
     readEntity(writable: Writable): Writable;
 
+    /**
+     * @inheritDoc
+     */
     readEntity<T>(unmarshaller: Writable | Unmarshal<T>): Writable | Promise<T> {
 
         if (unmarshaller instanceof Writable) {
@@ -137,8 +173,18 @@ export class NodeResponse implements ResponseContext {
         });
     }
 
+    /**
+     * @inheritDoc
+     */
     pipe(transformer: Transform) {
         this._reader = this._reader.pipe(transformer);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    close(): void {
+        this._reader.destroy();
     }
 
 }

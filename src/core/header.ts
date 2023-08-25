@@ -1,11 +1,21 @@
 import {Equals} from "../framework/equals";
 import {Cloneable} from "../framework/cloneable";
 import {Identifiable} from "../framework/identifiable";
+//@ts-ignore
+import {validateHeaderName, validateHeaderValue} from 'node:http';
 
 export type MultiValueMapType = { [key: string]: number | string | string[] | undefined }
 
 export class Header implements Equals, Cloneable<Header>, Identifiable {
-    constructor(private _key: string, private _value: string) {
+
+    private readonly _key: string;
+    private readonly _value: string;
+
+    constructor(key: string, value: string) {
+        validateHeaderName(key);
+        validateHeaderValue(key, value);
+        this._key = key;
+        this._value = value;
     }
 
     get key(): string {
