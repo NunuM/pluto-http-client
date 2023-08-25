@@ -32,6 +32,10 @@ export class WebTarget {
         return new HttpNodeRequest(this._client.snapshot(), new URL(this._url.toString()), abortSignal);
     }
 
+    close(): void {
+
+    }
+
 }
 
 export class Http2WebTarget extends WebTarget {
@@ -63,6 +67,10 @@ export class Http2WebTarget extends WebTarget {
             abortSignal,
             this._error
         );
+    }
+
+    close(): void {
+        this._http2Client.close();
     }
 
 }

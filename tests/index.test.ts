@@ -91,6 +91,8 @@ describe('testing http client', () => {
         const data = await response.readEntity(new StringEntity())
         expect(data.length > 0).toBe(true);
 
+        webTarget.close();
+
     });
 
 
@@ -117,6 +119,8 @@ describe('testing http client', () => {
 
             const data = await response.readEntity(new StringEntity())
             expect(data.length > 0).toBe(true);
+
+            webTarget.close();
         } catch (e) {
             console.log("error", e);
         }
